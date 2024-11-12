@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Todo;
 use Illuminate\Http\Request;
 
+use function Laravel\Prompts\search;
+
 class TodoController extends Controller
 {
     /**
@@ -13,7 +15,14 @@ class TodoController extends Controller
      */
     public function index()
     {
-        $data = Todo::orderBy('task', 'asc')->get();
+        $max_data = 3;
+        
+        if(request('search')){
+            $data = Todo::where('task','like', '%'.request('search').'%')->orderBy('task', 'asc')->paginate($max_data)->withQueryString();
+
+        } else {
+            $data = Todo::orderBy('task', 'asc')->paginate($max_data);
+        }
 
         return view('todo.app', compact('data'));
     }

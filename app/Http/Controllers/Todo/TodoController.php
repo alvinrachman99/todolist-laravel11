@@ -71,7 +71,24 @@ class TodoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate(
+            [
+                'task' => 'required|min:3|max:25'
+            ],
+            [
+                'task.required' => 'Input task wajib di isikan',
+                'task.min' => 'Minimal input untuk task adalah 3 karakter',
+                'task.max' => 'Minimal input untuk task adalah 25 karakter',
+            ]
+        );
+
+        $data = [
+            'task' => $request->input('task'),
+            'is_done' => $request->input('is_done'),
+        ];
+
+        Todo::where('id', $id)->update($data);
+        return redirect()->route('todo')->with('success', 'Berhasil update data.');
     }
 
     /**
